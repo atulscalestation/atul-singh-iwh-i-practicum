@@ -26,45 +26,75 @@ const PRIVATE_APP_ACCESS = '';
 * * This is sample code to give you a reference for how you should structure your calls. 
 
 * * App.get sample
-app.get('/contacts', async (req, res) => {
-    const contacts = 'https://api.hubspot.com/crm/v3/objects/contacts';
-    const headers = {
-        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
-        'Content-Type': 'application/json'
-    }
-    try {
-        const resp = await axios.get(contacts, { headers });
-        const data = resp.data.results;
-        res.render('contacts', { title: 'Contacts | HubSpot APIs', data });      
-    } catch (error) {
-        console.error(error);
-    }
-});
-
-* * App.post sample
-app.post('/update', async (req, res) => {
-    const update = {
-        properties: {
-            "favorite_book": req.body.newVal
-        }
-    }
-
-    const email = req.query.email;
-    const updateContact = `https://api.hubapi.com/crm/v3/objects/contacts/${email}?idProperty=email`;
+*/
+app.get('/', async (req, res) => {
+    const petsURL = 'https://api.hubspot.com/crm/v3/objects/pets';  // URL to fetch "pets" custom object data
     const headers = {
         Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
         'Content-Type': 'application/json'
     };
 
-    try { 
-        await axios.patch(updateContact, update, { headers } );
-        res.redirect('back');
-    } catch(err) {
-        console.error(err);
-    }
+    // Specify custom properties to retrieve (replace with actual property names)
+    const params = {
+        properties: ['species', 'name', 'bio'].join(',')  // Join the properties with commas
+    };
 
+    try {
+        const resp = await axios.get(petsURL, { headers, params });
+        const data = resp.data.results;  // Fetch the results from the API
+        console.log(params);
+        console.log(data);
+
+        // Render the data to the template
+        res.render('index', { title: 'Pets | HubSpot APIs', data });
+    } catch (error) {
+        console.error('Error fetching custom object "pets":', error.response ? error.response.data : error.message);
+        res.status(500).send('Error fetching custom object "pets"');
+    }
 });
-*/
+
+app.get('/update-cobj', (req, res) => {
+    // Render the 'updates' Pug template with an empty form
+    res.render('updates', {
+        title: 'Update Pets | HubSpot APIs',
+    });
+});
+
+app.post('/update-cobj', async (req, res) => {
+    const { species, name, bio } = req.body;  // Capture data from form
+
+    // API URL for creating a new custom object (pets)
+    const petsURL = 'https://api.hubspot.com/crm/v3/objects/pets';
+    
+    // API request headers
+    const headers = {
+        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+        'Content-Type': 'application/json'
+    };
+
+    // Data payload for creating a new custom object record
+    const data = {
+        properties: {
+            species,
+            name,
+            bio,
+        }
+    };
+
+    try {
+        // Sending POST request to HubSpot API
+        const resp = await axios.post(petsURL, data, { headers });
+        
+        // Check response and render success page or redirect
+        res.render('success', {
+            title: 'Pet Created',
+            message: `Pet "${name}" created successfully.`,
+        });
+    } catch (error) {
+        console.error('Error creating custom object "pets":', error.response ? error.response.data : error.message);
+        res.status(500).send('Error creating custom object "pets"');
+    }
+});
 
 
 // * Localhost

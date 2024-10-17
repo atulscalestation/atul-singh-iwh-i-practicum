@@ -1,0 +1,23 @@
+html
+  head
+    title= title
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="/css/style.css")
+  body
+   .table-wrapper
+      .form-wrapper
+        h1 Create a new Pet record
+
+        form(action="/update-cobj" method="POST")
+          div
+            label(for="species") Species:
+            input(type="text" id="species" name="species" required)
+          div
+            label(for="name") Name:
+            input(type="text" id="name" name="name" required)
+          div
+            label(for="bio") Bio:
+            textarea(id="bio" name="bio" required)
+
+          div
+            button(type="submit") Create Pet

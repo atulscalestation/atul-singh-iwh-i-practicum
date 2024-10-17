@@ -1,0 +1,21 @@
+doctype html
+html
+  head
+    title= title
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="/css/style.css")
+    body
+        .table-wrapper
+            a(href="/update-cobj" class="btn-link") Add/Update this table    
+            table
+                thead
+                    tr
+                        th Name
+                        th Species
+                        th Bio
+                tbody
+                    each contact in data
+                        tr
+                            td #{contact.properties.name}
+                            td #{contact.properties.species}
+                            td #{contact.properties.bio}
